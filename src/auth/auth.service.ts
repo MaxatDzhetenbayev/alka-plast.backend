@@ -13,7 +13,6 @@ export class AuthService {
     const user = await this.usersService.findOne(username);
     if (user && bcript.compare(password, user.passwordHash)) {
       const { passwordHash, ...result } = user;
-		console.log(user)
       return result;
     }
     return null;
@@ -21,8 +20,8 @@ export class AuthService {
 
   async login(user: any) {
     const payload = {
+      id: user.id,
       username: user.username,
-      id: user.userId,
       roles: user.roles,
     };
     return {

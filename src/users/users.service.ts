@@ -1,38 +1,24 @@
-import { Injectable, UseGuards } from '@nestjs/common';
-import { Role } from 'src/auth/role.enum';
-import { Roles } from 'src/auth/roles.decorator';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-
-class User {
-  id: number;
-  username: string;
-  passwordHash: string;
-  roles: string[];
-}
+import { Injectable } from '@nestjs/common';
+import { User } from './user.entity';
+import { InjectModel } from '@nestjs/sequelize';
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [
-    {
-      id: 1,
-      username: 'john',
-      passwordHash: 'changeme',
-      roles: ['admin'],
-    },
-    {
-      id: 2,
-      username: 'chris',
-      passwordHash: 'secret',
-      roles: ['user'],
-    },
-  ];
+  constructor(
+    @InjectModel(User)
+    private userRepository: typeof User,
+  ) {}
 
   async findOne(username: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === username);
+    return this.userRepository.findOne({
+      where: { username },
+    });
   }
 
   async findAll(): Promise<User[]> {
-    return this.users;
+    return await this.userRepository.findAll({
+      attributes: { exclude: ['passwordHash'] },
+    });
   }
 
   async create({
@@ -40,13 +26,11 @@ export class UsersService {
     passwordHash,
     roles,
   }: Omit<User, 'id'>): Promise<User> {
-    const user = {
-      id: this.users.length + 1,
+    const user = await this.userRepository.create({
       username,
       passwordHash,
       roles,
-    };
-    this.users.push(user);
+    });
     return user;
   }
 }
