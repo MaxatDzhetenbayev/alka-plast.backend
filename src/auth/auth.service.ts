@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcript from 'bcrypt';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -29,12 +30,21 @@ export class AuthService {
     };
   }
 
-  async register(userDto: any) {
-    const passwordHash = await bcript.hash(userDto.password, 10);
-    return this.usersService.create({
-      username: userDto.username,
-      passwordHash,
-      roles: userDto.roles || ['user'],
-    });
+  async register(userDto: CreateUserDto) {
+    try {
+      const existingUser = await this.usersService.findOne(userDto.username);
+      if (existingUser) {
+        throw new Error('Такой пользователь уже существует');
+      }
+
+      const { password, ...user } = userDto;
+      const passwordHash = await bcript.hash(password, 10);
+      return this.usersService.create({
+        ...user,
+        passwordHash,
+      });
+    } catch (error) {
+      throw new Error('Ошибка при регистрации пользователя');
+    }
   }
 }

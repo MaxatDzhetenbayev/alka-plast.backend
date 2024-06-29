@@ -11,11 +11,11 @@ export class AuthMiddleware implements NestMiddleware {
     if (!token) {
       return res.status(401).send('Unauthorized');
     }
-
     try {
-      const decoded = this.jwtService.verify(token);
+      const decoded = this.jwtService.verify(token, { secret: 'secretKey' });
       req.user = decoded;
-		console.log(req.user)
+      // !Console
+      // console.log('decoded', decoded);
       next();
     } catch (err) {
       return res.status(401).send('Unauthorized');

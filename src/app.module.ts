@@ -7,6 +7,11 @@ import { AuthMiddleware } from './auth/auth.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { UserRequestsModule } from './user-request/user-requests.module';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { User } from './users/user.entity';
+import { RequestHistory } from './user-request/request-history.entity';
+import { RequestDetail } from './user-request/request-detail.entity';
+import { UserRequest } from './user-request/user-request.entity';
+import { WindowsModule } from './windows/windows.module';
 
 @Module({
   imports: [
@@ -24,10 +29,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
       username: 'postgres',
       password: 'admin',
       database: 'alka',
-      models: [],
+      models: [User, UserRequest, RequestDetail, RequestHistory],
     }),
     UsersModule,
     UserRequestsModule,
+    WindowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

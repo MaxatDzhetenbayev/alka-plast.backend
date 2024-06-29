@@ -1,13 +1,14 @@
 import {
   BelongsTo,
   Column,
+  DataType,
   ForeignKey,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { UserRequest } from './user-request.entity';
 
-@Table({ timestamps: true })
+@Table({ timestamps: true, tableName: 'request_details' })
 export class RequestDetail extends Model<RequestDetail> {
   @Column({
     primaryKey: true,
@@ -17,7 +18,15 @@ export class RequestDetail extends Model<RequestDetail> {
   id: number;
 
   @Column
-  model: string;
+  item_id: number;
+
+  @Column
+  instalation_date: Date;
+
+  @Column({
+    type: DataType.JSONB,
+  })
+  options: Object;
 
   @Column({
     defaultValue: 'pending',
@@ -26,7 +35,7 @@ export class RequestDetail extends Model<RequestDetail> {
 
   @ForeignKey(() => UserRequest)
   @Column
-  requestid: number;
+  request_id: number;
 
   @BelongsTo(() => UserRequest)
   request: UserRequest;

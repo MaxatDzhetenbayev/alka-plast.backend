@@ -3,6 +3,7 @@ import { Column, DataType, HasMany, Table, Model } from 'sequelize-typescript';
 
 @Table({
   timestamps: true,
+  tableName: 'users',
 })
 export class User extends Model<User> {
   @Column({
@@ -19,6 +20,9 @@ export class User extends Model<User> {
 
   @Column
   passwordHash: string;
+
+  @Column
+  email: string;
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),

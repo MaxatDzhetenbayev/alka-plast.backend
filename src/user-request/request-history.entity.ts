@@ -7,7 +7,7 @@ import {
 } from 'sequelize-typescript';
 import { UserRequest } from './user-request.entity';
 
-@Table({ timestamps: true })
+@Table({ timestamps: true, tableName: 'request_history'})
 export class RequestHistory extends Model<RequestHistory> {
   @Column({
     primaryKey: true,

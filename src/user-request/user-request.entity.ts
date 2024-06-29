@@ -11,7 +11,7 @@ import { RequestDetail } from './request-detail.entity';
 import { RequestHistory } from './request-history.entity';
 import { User } from 'src/users/user.entity';
 
-@Table({ timestamps: true })
+@Table({ timestamps: true, tableName: 'user_requests' })
 export class UserRequest extends Model<UserRequest> {
   @Column({
     primaryKey: true,
@@ -34,7 +34,7 @@ export class UserRequest extends Model<UserRequest> {
 
   @ForeignKey(() => User)
   @Column
-  userid: number;
+  user_id: number;
 
   @HasOne(() => RequestDetail)
   detail: RequestDetail;
