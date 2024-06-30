@@ -12,6 +12,11 @@ import { RequestHistory } from './user-request/request-history.entity';
 import { RequestDetail } from './user-request/request-detail.entity';
 import { UserRequest } from './user-request/user-request.entity';
 import { WindowsModule } from './windows/windows.module';
+import { Window } from './windows/entities/window.entity';
+import { WindowItem } from './windows/entities/window-item.entity';
+import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -22,6 +27,10 @@ import { WindowsModule } from './windows/windows.module';
         signOptions: { expiresIn: '60m' },
       }),
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
       host: 'localhost',
@@ -29,11 +38,19 @@ import { WindowsModule } from './windows/windows.module';
       username: 'postgres',
       password: 'admin',
       database: 'alka',
-      models: [User, UserRequest, RequestDetail, RequestHistory],
+      models: [
+        User,
+        UserRequest,
+        RequestDetail,
+        RequestHistory,
+        Window,
+        WindowItem,
+      ],
     }),
     UsersModule,
     UserRequestsModule,
     WindowsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -42,9 +59,8 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes(
-        { path: 'users', method: RequestMethod.ALL },
-        { path: 'user-requests', method: RequestMethod.ALL },
-      );
+      .exclude({ path: 'files/(.*)', method: RequestMethod.GET })
+      .exclude({ path: 'auth/(.*)', method: RequestMethod.ALL })
+      .forRoutes('*');
   }
 }

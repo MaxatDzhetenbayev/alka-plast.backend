@@ -7,43 +7,43 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       price: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       price: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       image: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       characteristics: {
-        type: Sequelize.JSONB
+        type: Sequelize.JSONB,
       },
-		window_id: {
-		  type: Sequelize.INTEGER,
-		  references: {
-			 model: 'windows',
-			 key: 'id'
-		  },
-		  onUpdate: 'CASCADE',
-		  onDelete: 'CASCADE'
-		},
+      window_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'windows',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('WindowItems');
-  }
+  },
 };

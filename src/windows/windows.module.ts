@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
-import { WindowsController } from './windows.controller';
 import { WindowsService } from './windows.service';
+import { WindowsController } from './windows.controller';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { Window } from './entities/window.entity';
+import { WindowItem } from './entities/window-item.entity';
 
 @Module({
   controllers: [WindowsController],
-  providers: [WindowsService]
+  imports: [SequelizeModule.forFeature([Window, WindowItem])],
+  providers: [WindowsService],
 })
 export class WindowsModule {}

@@ -41,4 +41,36 @@ export class UserRequestService {
       throw new Error(error);
     }
   }
+
+  async updateRequest(dto: CreateUserRequestDto, id: number) {
+    const { detail, ...main } = dto;
+
+    const transaction = await this.sequelize.transaction();
+    try {
+      const request = await this.requestRepository.findByPk(id);
+
+      if (!request) {
+        throw new InternalServerErrorException('Request not found');
+      }
+
+      await request.update(main, { transaction });
+
+      const requestDetail = await this.detailRepository.findOne({
+        where: { request_id: id },
+      });
+
+      if (!requestDetail) {
+        throw new InternalServerErrorException('Detail not found');
+      }
+
+      await requestDetail.update(detail, { transaction });
+
+      await transaction.commit();
+
+      return { ...request.dataValues, detail: requestDetail };
+    } catch (error) {
+      await transaction.rollback();
+      throw new Error(error);
+    }
+  }
 }
