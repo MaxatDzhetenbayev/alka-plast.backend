@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcript from 'bcrypt';
@@ -19,6 +19,25 @@ export class AuthService {
     return null;
   }
 
+  async verifyToken(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+      const user = await this.usersService.findOne(decoded.username);
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      const {
+        dataValues: { passwordHash, createdAt, updatedAt, ...result },
+      } = user;
+
+      return result;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
   async login(user: any) {
     const payload = {
       id: user.id,
@@ -34,17 +53,18 @@ export class AuthService {
     try {
       const existingUser = await this.usersService.findOne(userDto.username);
       if (existingUser) {
-        throw new Error('Такой пользователь уже существует');
+        throw new Error('This user already exists');
       }
 
       const { password, ...user } = userDto;
       const passwordHash = await bcript.hash(password, 10);
       return this.usersService.create({
         ...user,
+        roles: user.roles || ['user'],
         passwordHash,
       });
     } catch (error) {
-      throw new Error('Ошибка при регистрации пользователя');
+      throw new Error('Error while registering user');
     }
   }
 }

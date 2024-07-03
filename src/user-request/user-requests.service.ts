@@ -35,7 +35,7 @@ export class UserRequestService {
 
       await transaction.commit();
 
-      return createdRequest;
+      return { ...createdRequest, detail: createdDetail };
     } catch (error) {
       await transaction.rollback();
       throw new Error(error);

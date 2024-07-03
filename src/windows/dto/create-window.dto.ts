@@ -23,3 +23,12 @@ export class CreateWindowItemDto {
   @IsObject()
   characteristics: Object;
 }
+
+export class CreateWindowItemFeatureDto {
+  @IsNotEmpty()
+  @IsString()
+  title: string;
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+}

@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpException,
   HttpStatus,
   Post,
+  Req,
   Request,
   Res,
   UseGuards,
@@ -27,7 +29,7 @@ export class AuthController {
 
       res.cookie('jwt', token.access_token, {
         httpOnly: true,
-        secure: true,
+        secure: 'production' === process.env.NODE_ENV,
         sameSite: 'strict',
       });
       return res.send({ message: 'Успешная авторизация' });
@@ -41,6 +43,31 @@ export class AuthController {
   async register(@Body() userDto: CreateUserDto) {
     try {
       return await this.authService.register(userDto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get('profile')
+  async getProfile(@Req() req, @Res() res: Response) {
+    try {
+      const token = req.cookies['jwt'];
+      if (!token) {
+        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      }
+
+      const user = await this.authService.verifyToken(token);
+      return res.status(HttpStatus.OK).json(user);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    try {
+      res.clearCookie('jwt');
+      return res.send({ message: 'Успешный выход' });
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

@@ -17,6 +17,7 @@ import { WindowItem } from './windows/entities/window-item.entity';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { WindowItemFeature } from './windows/entities/window-item-feature.entity';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { join } from 'path';
         RequestHistory,
         Window,
         WindowItem,
+        WindowItemFeature,
       ],
     }),
     UsersModule,
@@ -59,8 +61,12 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .exclude({ path: 'files/(.*)', method: RequestMethod.GET })
-      .exclude({ path: 'auth/(.*)', method: RequestMethod.ALL })
+      .exclude(
+        { path: 'auth/(.*)', method: RequestMethod.ALL },
+        { path: 'uploads/(.*)', method: RequestMethod.GET },
+        { path: 'windows', method: RequestMethod.GET },
+        { path: 'windows/(.*)', method: RequestMethod.GET },
+      )
       .forRoutes('*');
   }
 }

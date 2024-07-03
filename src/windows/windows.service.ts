@@ -1,9 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateWindowDto, CreateWindowItemDto } from './dto/create-window.dto';
+import {
+  CreateWindowDto,
+  CreateWindowItemDto,
+  CreateWindowItemFeatureDto,
+} from './dto/create-window.dto';
 import { UpdateWindowDto } from './dto/update-window.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { WindowItem } from './entities/window-item.entity';
 import { Window } from './entities/window.entity';
+import { WindowItemFeature } from './entities/window-item-feature.entity';
 
 @Injectable()
 export class WindowsService {
@@ -12,6 +17,8 @@ export class WindowsService {
     private windowRepository: typeof Window,
     @InjectModel(WindowItem)
     private windowItemRepository: typeof WindowItem,
+    @InjectModel(WindowItemFeature)
+    private windowItemFeatureRepository: typeof WindowItemFeature,
   ) {}
 
   async create(createWindowDto: CreateWindowDto) {
@@ -44,6 +51,29 @@ export class WindowsService {
     }
   }
 
+  async createWindowItemFeature(
+    windowItemId: number,
+    createWindowItemDto: CreateWindowItemFeatureDto,
+  ) {
+    const windowItem = await this.windowItemRepository.findByPk(windowItemId);
+
+    if (!windowItem) {
+      throw new HttpException('Window item not found', HttpStatus.NOT_FOUND);
+    }
+
+    try {
+      const windowItemFeature = await this.windowItemFeatureRepository.create({
+        item_id: windowItemId,
+        ...createWindowItemDto,
+      });
+
+      return windowItemFeature;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async findAll() {
     try {
       const window = await this.windowRepository.findAll({
@@ -58,12 +88,29 @@ export class WindowsService {
   async findOne(id: number) {
     try {
       const window = await this.windowRepository.findByPk(id, {
-        include: [WindowItem],
+        include: [
+          {
+            model: WindowItem,
+            include: [WindowItemFeature],
+          },
+        ],
       });
       return window;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  async findWindowItems(windowId: number) {
+    const window = await this.windowRepository.findByPk(windowId, {
+      include: [WindowItem],
+    });
+
+    if (!window) {
+      throw new HttpException('Window not found', HttpStatus.NOT_FOUND);
+    }
+
+    return window.items;
   }
 
   update(id: number, updateWindowDto: UpdateWindowDto) {

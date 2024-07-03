@@ -13,7 +13,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { WindowsService } from './windows.service';
-import { CreateWindowDto, CreateWindowItemDto } from './dto/create-window.dto';
+import {
+  CreateWindowDto,
+  CreateWindowItemDto,
+  CreateWindowItemFeatureDto,
+} from './dto/create-window.dto';
 import { UpdateWindowDto } from './dto/update-window.dto';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/auth/role.enum';
@@ -42,14 +46,32 @@ export class WindowsController {
   }
 
   @UseGuards(RolesGuard)
-  @Roles(Role.Admin, Role.User)
+  @Roles(Role.Admin)
+  @Post(':id/features')
+  async createWindowItemFeature(
+    @Param('id', ParseIntPipe) windowItemId: number,
+    @Body() createWindowItemFeatureDto: CreateWindowItemFeatureDto,
+  ) {
+    return this.windowsService.createWindowItemFeature(
+      windowItemId,
+      createWindowItemFeatureDto,
+    );
+  }
+
+  @Get(':id/items')
+  async findWindowItems(@Param('id', ParseIntPipe) windowId: number) {
+    return this.windowsService.findWindowItems(windowId);
+  }
+//   @Get(':id/featres')
+//   async findWindowItemsFeatures(@Param('id', ParseIntPipe) itemId: number) {
+//     return this.windowsService.findWindowItemFeatures(itemId);
+//   }
+
   @Get()
   findAll() {
     return this.windowsService.findAll();
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(Role.Admin, Role.User)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.windowsService.findOne(+id);

@@ -1,5 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { Is } from 'sequelize-typescript';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -12,5 +11,6 @@ export class CreateUserDto {
   @IsString()
   password: string;
   @IsString({ each: true })
+  @IsOptional()
   roles?: string[];
 }

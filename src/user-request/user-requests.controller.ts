@@ -24,7 +24,7 @@ export class RequestController {
   constructor(private usersRequestService: UserRequestService) {}
 
   @UseGuards(RolesGuard)
-  @Roles(Role.User, Role.Admin)
+  @Roles(Role.User, Role.Manager, Role.Admin)
   @HttpCode(HttpStatus.CREATED)
   @Post()
   createRequest(@Body() requestDto: CreateUserRequestDto, @Request() req) {
@@ -36,8 +36,8 @@ export class RequestController {
   }
 
   @Patch(':id')
-  //   @UseGuards(RolesGuard)
-  //   @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin, Role.Manager, Role.Worker)
   updateRequest(
     @Body() requestDto: CreateUserRequestDto,
     @Param('id', ParseIntPipe) id: number,

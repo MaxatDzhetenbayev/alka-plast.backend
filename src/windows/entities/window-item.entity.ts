@@ -5,8 +5,10 @@ import {
   ForeignKey,
   BelongsTo,
   Model,
+  HasMany,
 } from 'sequelize-typescript';
 import { Window } from './window.entity';
+import { WindowItemFeature } from './window-item-feature.entity';
 
 @Table({ timestamps: true, tableName: 'window_items' })
 export class WindowItem extends Model<WindowItem> {
@@ -37,4 +39,7 @@ export class WindowItem extends Model<WindowItem> {
 
   @BelongsTo(() => Window)
   window: Window;
+
+  @HasMany(() => WindowItemFeature)
+  features: WindowItemFeature[];
 }
