@@ -4,7 +4,7 @@ export class CreateUserRequestDto {
   phone: string;
   address: string;
   detail: {
-    model: string;
-    status: string;
+    item_id: number;
+    measurement_date: Date;
   };
 }

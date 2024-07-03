@@ -23,6 +23,9 @@ export class RequestDetail extends Model<RequestDetail> {
   @Column
   instalation_date: Date;
 
+  @Column
+  measurement_date: Date;
+  
   @Column({
     type: DataType.JSONB,
   })
@@ -32,6 +35,7 @@ export class RequestDetail extends Model<RequestDetail> {
     defaultValue: 'pending',
   })
   status: string;
+
 
   @ForeignKey(() => UserRequest)
   @Column

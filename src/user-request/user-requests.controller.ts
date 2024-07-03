@@ -37,7 +37,7 @@ export class RequestController {
 
   @Patch(':id')
   @UseGuards(RolesGuard)
-  @Roles(Role.Admin, Role.Manager, Role.Worker)
+  @Roles(Role.Admin, Role.Manager, Role.Worker, Role.User)
   updateRequest(
     @Body() requestDto: CreateUserRequestDto,
     @Param('id', ParseIntPipe) id: number,
