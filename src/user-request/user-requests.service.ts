@@ -73,4 +73,18 @@ export class UserRequestService {
       throw new Error(error);
     }
   }
+
+  async getRequestsByStatus(status: string) {
+    const includeWhere = status === 'all' ? {} : { status };
+
+    return this.requestRepository.findAll({
+      include: [
+        {
+          model: RequestDetail,
+          as: 'detail',
+          where: includeWhere,
+        },
+      ],
+    });
+  }
 }

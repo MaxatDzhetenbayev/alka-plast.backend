@@ -11,6 +11,8 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { UserRequest } from './user-request.entity';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -44,6 +46,18 @@ export class RequestController {
   ) {
     try {
       return this.usersRequestService.updateRequest(requestDto, id);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get()
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin, Role.Manager, Role.Worker)
+  getRequestsByStatus(@Query('status') status: string) {
+    console.log('status', status);
+    try {
+      return this.usersRequestService.getRequestsByStatus(status);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
