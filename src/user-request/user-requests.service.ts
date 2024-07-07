@@ -4,6 +4,8 @@ import { CreateUserRequestDto } from './dto/create-user-request.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { RequestDetail } from './request-detail.entity';
 import { Sequelize } from 'sequelize-typescript';
+import { WindowsService } from 'src/windows/windows.service';
+import { WindowItem } from 'src/windows/entities/window-item.entity';
 
 @Injectable()
 export class UserRequestService {
@@ -13,6 +15,7 @@ export class UserRequestService {
     @InjectModel(RequestDetail)
     private detailRepository: typeof RequestDetail,
     private sequelize: Sequelize,
+    private windowsService: WindowsService,
   ) {}
 
   async createRequest(dto: CreateUserRequestDto, userid: number) {
@@ -78,11 +81,28 @@ export class UserRequestService {
     const includeWhere = status === 'all' ? {} : { status };
 
     return this.requestRepository.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt', 'user_id'],
+      },
       include: [
         {
           model: RequestDetail,
           as: 'detail',
           where: includeWhere,
+
+          attributes: [
+            'id',
+            'instalation_date',
+            'status',
+            'measurement_date',
+            'options',
+          ],
+          include: [
+            {
+              model: WindowItem,
+              attributes: ['id', 'name'],
+            },
+          ],
         },
       ],
     });

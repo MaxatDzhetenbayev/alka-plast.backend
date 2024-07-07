@@ -9,6 +9,7 @@ import {
 } from 'sequelize-typescript';
 import { Window } from './window.entity';
 import { WindowItemFeature } from './window-item-feature.entity';
+import { RequestDetail } from 'src/user-request/request-detail.entity';
 
 @Table({ timestamps: true, tableName: 'window_items' })
 export class WindowItem extends Model<WindowItem> {
@@ -42,4 +43,7 @@ export class WindowItem extends Model<WindowItem> {
 
   @HasMany(() => WindowItemFeature)
   features: WindowItemFeature[];
+
+  @HasMany(() => RequestDetail)
+  requestDetails: RequestDetail[];
 }

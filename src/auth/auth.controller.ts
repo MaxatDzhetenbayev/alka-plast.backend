@@ -72,4 +72,13 @@ export class AuthController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  @Post('refresh-token')
+  async refreshToken(@Body('token') token: string) {
+    try {
+      return await this.authService.refreshToken(token);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

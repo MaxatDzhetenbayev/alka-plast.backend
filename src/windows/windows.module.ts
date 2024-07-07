@@ -12,5 +12,6 @@ import { WindowItemFeature } from './entities/window-item-feature.entity';
     SequelizeModule.forFeature([Window, WindowItem, WindowItemFeature]),
   ],
   providers: [WindowsService],
+  exports: [WindowsService],
 })
 export class WindowsModule {}

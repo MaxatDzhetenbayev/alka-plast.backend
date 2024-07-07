@@ -67,4 +67,26 @@ export class AuthService {
       throw new Error('Error while registering user');
     }
   }
+
+  async refreshToken(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token, { ignoreExpiration: true });
+      const user = await this.usersService.findOne(decoded.username);
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      const payload = {
+        id: user.id,
+        username: user.username,
+        roles: user.roles,
+      };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }

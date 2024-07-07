@@ -7,6 +7,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { UserRequest } from './user-request.entity';
+import { WindowItem } from 'src/windows/entities/window-item.entity';
 
 @Table({ timestamps: true, tableName: 'request_details' })
 export class RequestDetail extends Model<RequestDetail> {
@@ -17,6 +18,7 @@ export class RequestDetail extends Model<RequestDetail> {
   })
   id: number;
 
+  @ForeignKey(() => WindowItem)
   @Column
   item_id: number;
 
@@ -25,7 +27,7 @@ export class RequestDetail extends Model<RequestDetail> {
 
   @Column
   measurement_date: Date;
-  
+
   @Column({
     type: DataType.JSONB,
   })
@@ -36,11 +38,13 @@ export class RequestDetail extends Model<RequestDetail> {
   })
   status: string;
 
-
   @ForeignKey(() => UserRequest)
   @Column
   request_id: number;
 
   @BelongsTo(() => UserRequest)
   request: UserRequest;
+
+  @BelongsTo(() => WindowItem)
+  item: WindowItem;
 }

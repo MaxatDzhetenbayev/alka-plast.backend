@@ -62,10 +62,10 @@ export class WindowsController {
   async findWindowItems(@Param('id', ParseIntPipe) windowId: number) {
     return this.windowsService.findWindowItems(windowId);
   }
-//   @Get(':id/featres')
-//   async findWindowItemsFeatures(@Param('id', ParseIntPipe) itemId: number) {
-//     return this.windowsService.findWindowItemFeatures(itemId);
-//   }
+  @Get(':id/featres')
+  async findWindowItemsFeatures(@Param('id', ParseIntPipe) itemId: number) {
+    return this.windowsService.findWindowItemFeatures(itemId);
+  }
 
   @Get()
   findAll() {

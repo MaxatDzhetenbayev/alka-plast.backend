@@ -51,6 +51,18 @@ export class WindowsService {
     }
   }
 
+  async findWindowItemFeatures(windowItemId: number) {
+    const windowItem = await this.windowItemRepository.findByPk(windowItemId, {
+      include: [WindowItemFeature],
+    });
+
+    if (!windowItem) {
+      throw new HttpException('Window item not found', HttpStatus.NOT_FOUND);
+    }
+
+    return windowItem.features;
+  }
+
   async createWindowItemFeature(
     windowItemId: number,
     createWindowItemDto: CreateWindowItemFeatureDto,

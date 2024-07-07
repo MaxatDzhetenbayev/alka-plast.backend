@@ -25,7 +25,7 @@ import { WindowItemFeature } from './windows/entities/window-item-feature.entity
     JwtModule.registerAsync({
       useFactory: async () => ({
         secret: 'secretKey',
-        signOptions: { expiresIn: '60m' },
+        signOptions: { expiresIn: '10s' },
       }),
     }),
     ServeStaticModule.forRoot({
