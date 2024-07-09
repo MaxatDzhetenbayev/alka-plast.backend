@@ -107,4 +107,31 @@ export class UserRequestService {
       ],
     });
   }
+
+  async getRequestsByUserId(userId: number) {
+    return this.requestRepository.findAll({
+      where: { user_id: userId },
+
+      include: [
+        {
+          model: RequestDetail,
+          as: 'detail',
+          attributes: [
+            'id',
+            'instalation_date',
+            'status',
+            'measurement_date',
+            'options',
+          ],
+          include: [
+            {
+              model: WindowItem,
+              attributes: ['id', 'name'],
+            },
+          ],
+        },
+      ],
+    });
+  }
+  s;
 }

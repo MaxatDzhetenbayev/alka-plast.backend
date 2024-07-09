@@ -62,4 +62,15 @@ export class RequestController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  @Get('user')
+  @UseGuards(RolesGuard)
+  @Roles(Role.User)
+  getRequestsByUserId(@Request() req) {
+    try {
+      return this.usersRequestService.getRequestsByUserId(req.user.id);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

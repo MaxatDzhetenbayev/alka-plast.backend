@@ -18,9 +18,14 @@ import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { WindowItemFeature } from './windows/entities/window-item-feature.entity';
+import { PaymentModule } from './payment/payment.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     AuthModule,
     JwtModule.registerAsync({
       useFactory: async () => ({
@@ -53,6 +58,7 @@ import { WindowItemFeature } from './windows/entities/window-item-feature.entity
     UserRequestsModule,
     WindowsModule,
     FilesModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
