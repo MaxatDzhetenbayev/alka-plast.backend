@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
   CreateWindowDto,
   CreateWindowItemDto,
@@ -125,8 +125,18 @@ export class WindowsService {
     return window.items;
   }
 
-  update(id: number, updateWindowDto: UpdateWindowDto) {
-    return `This action updates a #${id} window`;
+  async update(id: number, updateWindowDto: UpdateWindowDto) {
+    try {
+      const window = await this.windowRepository.findByPk(id);
+
+      if (!window) {
+        throw new InternalServerErrorException('Window not found');
+      }
+
+      return await window.update(updateWindowDto);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   remove(id: number) {

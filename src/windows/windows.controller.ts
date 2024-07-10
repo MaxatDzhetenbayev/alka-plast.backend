@@ -79,6 +79,8 @@ export class WindowsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateWindowDto: UpdateWindowDto) {
+    console.log('window id', id);
+    console.log('data', updateWindowDto);
     return this.windowsService.update(+id, updateWindowDto);
   }
 

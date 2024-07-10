@@ -17,5 +17,5 @@ export class Window extends Model<Window> {
   description: string;
 
   @HasMany(() => WindowItem)
-  items: WindowItem[];
+  items?: WindowItem[];
 }
