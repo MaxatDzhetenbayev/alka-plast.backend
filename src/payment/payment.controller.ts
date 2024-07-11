@@ -17,7 +17,6 @@ export class PaymentController {
 
   @Post('intent')
   create(@Body() createPaymentIntentDto: { requestId: string }) {
-    console.log("id " + createPaymentIntentDto.requestId)
     return this.paymentService.createPaymentIntent(
       +createPaymentIntentDto.requestId,
     );
@@ -33,9 +32,10 @@ export class PaymentController {
     return this.paymentService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentService.update(+id, updatePaymentDto);
+  @Post('save')
+  save(@Body() PaymentDto: any) {
+    console.log(PaymentDto)
+    // return this.paymentService.update(+id, updatePaymentDto);
   }
 
   @Delete(':id')
