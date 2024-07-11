@@ -14,5 +14,6 @@ import { WindowsModule } from 'src/windows/windows.module';
   ],
   controllers: [RequestController],
   providers: [UserRequestService],
+  exports: [UserRequestService],
 })
 export class UserRequestsModule {}

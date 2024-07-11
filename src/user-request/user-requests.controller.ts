@@ -68,7 +68,19 @@ export class RequestController {
   @Roles(Role.User)
   getRequestsByUserId(@Request() req) {
     try {
+      console.log('req.user', req.user);
       return this.usersRequestService.getRequestsByUserId(req.user.id);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin, Role.Manager, Role.Worker, Role.User)
+  getRequestById(@Param('id', ParseIntPipe) id: number) {
+    try {
+      return this.usersRequestService.getRequestById(id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

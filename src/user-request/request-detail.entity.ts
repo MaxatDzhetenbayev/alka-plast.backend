@@ -9,6 +9,13 @@ import {
 import { UserRequest } from './user-request.entity';
 import { WindowItem } from 'src/windows/entities/window-item.entity';
 
+
+interface Options {
+  height?: number;
+  width?: number;
+}
+
+
 @Table({ timestamps: true, tableName: 'request_details' })
 export class RequestDetail extends Model<RequestDetail> {
   @Column({
@@ -31,7 +38,7 @@ export class RequestDetail extends Model<RequestDetail> {
   @Column({
     type: DataType.JSONB,
   })
-  options: Object;
+  options: Options;
 
   @Column({
     defaultValue: 'pending',

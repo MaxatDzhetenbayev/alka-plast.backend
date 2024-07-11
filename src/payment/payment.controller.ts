@@ -16,9 +16,10 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post('intent')
-  create(@Body() createPaymentIntentDto: { amount: number }) {
+  create(@Body() createPaymentIntentDto: { requestId: string }) {
+    console.log("id " + createPaymentIntentDto.requestId)
     return this.paymentService.createPaymentIntent(
-      createPaymentIntentDto.amount,
+      +createPaymentIntentDto.requestId,
     );
   }
 

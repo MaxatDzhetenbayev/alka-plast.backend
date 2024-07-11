@@ -2,19 +2,36 @@ import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import Stripe from 'stripe';
+import { UserRequestService } from 'src/user-request/user-requests.service';
 @Injectable()
 export class PaymentService {
   private stripe: Stripe;
 
-  constructor() {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  constructor(
+    private readonly userRequestService: UserRequestService,
+  ) {
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
   }
 
-  async createPaymentIntent(createPaymentIntentDto: number) {
-    console.log('secret' + process.env.STRIPE_SECRET_KEY);
+  async createPaymentIntent(id: number) {
+
+    const requestInfo = await this.userRequestService.getRequestById(id);
+
+    if (!requestInfo) {
+      throw new Error('Request not found');
+    }
+
+    const itemPrice = requestInfo.detail.item.price
+    const calcHeight = requestInfo.detail.options.height / 100;
+    const calcWidth = requestInfo.detail.options.width / 100;
+
+    const createPaymentIntentDto = (() => Math.ceil(calcHeight * calcWidth * itemPrice))()
+    
+    
+    
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount: createPaymentIntentDto,
-      currency: 'usd',
+      currency: 'kzt',
     });
 
     return {

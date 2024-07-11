@@ -24,7 +24,7 @@ export class WindowItem extends Model<WindowItem> {
   name: string;
 
   @Column
-  price: string;
+  price: number;
 
   @Column
   image: string;

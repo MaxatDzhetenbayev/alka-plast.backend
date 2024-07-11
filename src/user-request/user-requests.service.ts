@@ -133,5 +133,21 @@ export class UserRequestService {
       ],
     });
   }
-  s;
+  
+  async getRequestById(id: number) {
+    return this.requestRepository.findByPk(id, {
+      include: [
+        {
+          model: RequestDetail,
+          as: 'detail',
+          include: [
+            {
+              model: WindowItem,
+              attributes: ['id', 'name', 'price'],
+            },
+          ],
+        },
+      ],
+    });
+  }
 }

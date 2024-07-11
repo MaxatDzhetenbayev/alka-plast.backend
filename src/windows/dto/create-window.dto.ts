@@ -15,7 +15,7 @@ export class CreateWindowItemDto {
   name: string;
   @IsNotEmpty()
   @IsNumber()
-  price: string;
+  price: number;
   @IsNotEmpty()
   @IsString()
   image: string;
