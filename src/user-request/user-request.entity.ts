@@ -10,6 +10,7 @@ import {
 import { RequestDetail } from './request-detail.entity';
 import { RequestHistory } from './request-history.entity';
 import { User } from 'src/users/user.entity';
+import { Payment } from 'src/payment/entities/payment.entity';
 
 @Table({ timestamps: true, tableName: 'user_requests' })
 export class UserRequest extends Model<UserRequest> {
@@ -38,6 +39,9 @@ export class UserRequest extends Model<UserRequest> {
 
   @HasOne(() => RequestDetail)
   detail: RequestDetail;
+
+  @HasOne(() => Payment)
+  payment: Payment;
 
   @HasMany(() => RequestHistory)
   histories: RequestHistory[];

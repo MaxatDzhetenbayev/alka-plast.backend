@@ -20,6 +20,7 @@ import { join } from 'path';
 import { WindowItemFeature } from './windows/entities/window-item-feature.entity';
 import { PaymentModule } from './payment/payment.module';
 import { ConfigModule } from '@nestjs/config';
+import { Payment } from './payment/entities/payment.entity';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ConfigModule } from '@nestjs/config';
         Window,
         WindowItem,
         WindowItemFeature,
+        Payment
       ],
     }),
     UsersModule,
@@ -72,6 +74,7 @@ export class AppModule {
         { path: 'uploads/(.*)', method: RequestMethod.GET },
         { path: 'windows', method: RequestMethod.GET },
         { path: 'windows/(.*)', method: RequestMethod.GET },
+        { path: 'payment/(.*)', method: RequestMethod.ALL },
       )
       .forRoutes('*');
   }

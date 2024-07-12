@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
 } from '@nestjs/common';
@@ -32,10 +31,21 @@ export class PaymentController {
     return this.paymentService.findOne(+id);
   }
 
-  @Post('save')
-  save(@Body() PaymentDto: any) {
-    console.log(PaymentDto)
-    // return this.paymentService.update(+id, updatePaymentDto);
+  @Post('purchase')
+  save(@Body() body: any) {
+    try {
+      const event = body;
+      if(event.type == 'payment_intent.succeeded') {
+        console.log('payment_intent.succeeded')
+        return this.paymentService.savePayment(event.data.object);
+      }
+      else if(event.type == 'charge.succeeded') {
+        console.log('charge.succeeded')
+        return this.paymentService.chargePayment(event.data.object);
+      }
+    } catch (error) {
+        console.log(error)
+    }
   }
 
   @Delete(':id')
