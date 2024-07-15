@@ -45,6 +45,7 @@ import { Payment } from './payment/entities/payment.entity';
       username: 'postgres',
       password: 'admin',
       database: 'alka',
+      logging: false,
       models: [
         User,
         UserRequest,

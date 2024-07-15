@@ -7,8 +7,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+
 
 @Controller('payment')
 export class PaymentController {
@@ -33,6 +32,7 @@ export class PaymentController {
 
   @Post('purchase')
   save(@Body() body: any) {
+    console.log('it is working')
     try {
       const event = body;
       if(event.type == 'payment_intent.succeeded') {
