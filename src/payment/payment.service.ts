@@ -35,6 +35,9 @@ export class PaymentService {
     const paymentIntent = await this.stripe.paymentIntents.create({
       amount: createPaymentIntentDto,
       currency: 'kzt',
+      metadata: {
+        requestId: id,
+      }
     });
 
     return {
@@ -48,21 +51,30 @@ export class PaymentService {
       amount: body.amount,
       currency: body.currency,
       status: body.status,
-      request_id: 19,
+      request_id: body.metadata.requestId,
       payment_method_id: body.payment_method,
     });
     
   }
 
   async chargePayment(body: any){
-    const findedPayment = await this.paymentRepository.findOne({
-      where: {payment_intent_id: body.payment_intent}
-    })
-    findedPayment.card_brand = body.payment_method_details.card.brand;
-    findedPayment.card_last = body.payment_method_details.card.last4;
-    findedPayment.receipt_url = body.receipt_url;
+    try {
+      const findedPayment = await this.paymentRepository.findOne({
+        where: {payment_intent_id: body.payment_intent}
+      })
+      findedPayment.card_brand = body.payment_method_details.card.brand;
+      findedPayment.card_last = body.payment_method_details.card.last4;
+      findedPayment.receipt_url = body.receipt_url;
+  
+      await findedPayment.save();
 
-    await findedPayment.save();
+      const request = await this.userRequestService.getRequestById(findedPayment.request_id);
+      
+      request.detail.status = 'work';
+      request.detail.save();
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 
 

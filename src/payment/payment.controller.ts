@@ -32,15 +32,16 @@ export class PaymentController {
 
   @Post('purchase')
   save(@Body() body: any) {
-    console.log('it is working')
     try {
       const event = body;
       if(event.type == 'payment_intent.succeeded') {
         console.log('payment_intent.succeeded')
+        console.log(event.data.object)
         return this.paymentService.savePayment(event.data.object);
       }
       else if(event.type == 'charge.succeeded') {
         console.log('charge.succeeded')
+        console.log(event.data.object)
         return this.paymentService.chargePayment(event.data.object);
       }
     } catch (error) {
