@@ -70,7 +70,7 @@ export class PaymentService {
 
       const request = await this.userRequestService.getRequestById(findedPayment.request_id);
       
-      request.detail.status = 'work';
+      request.detail.status = 'paid';
       request.detail.save();
     } catch (error) {
       console.log(error.message)
