@@ -21,6 +21,7 @@ import { WindowItemFeature } from './windows/entities/window-item-feature.entity
 import { PaymentModule } from './payment/payment.module';
 import { ConfigModule } from '@nestjs/config';
 import { Payment } from './payment/entities/payment.entity';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { Payment } from './payment/entities/payment.entity';
     WindowsModule,
     FilesModule,
     PaymentModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
