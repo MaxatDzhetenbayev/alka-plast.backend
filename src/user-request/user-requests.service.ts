@@ -133,7 +133,7 @@ export class UserRequestService {
       ],
     });
   }
-  
+
   async getRequestById(id: number) {
     return this.requestRepository.findByPk(id, {
       include: [

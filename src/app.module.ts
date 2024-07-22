@@ -22,6 +22,7 @@ import { PaymentModule } from './payment/payment.module';
 import { ConfigModule } from '@nestjs/config';
 import { Payment } from './payment/entities/payment.entity';
 import { CommentsModule } from './comments/comments.module';
+import { Comment } from './comments/entities/comment.entity';
 
 @Module({
   imports: [
@@ -55,7 +56,8 @@ import { CommentsModule } from './comments/comments.module';
         Window,
         WindowItem,
         WindowItemFeature,
-        Payment
+        Payment,
+		  Comment
       ],
     }),
     UsersModule,

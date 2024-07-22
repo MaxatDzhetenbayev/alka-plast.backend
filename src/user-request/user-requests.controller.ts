@@ -55,7 +55,7 @@ export class RequestController {
   @UseGuards(RolesGuard)
   @Roles(Role.Admin, Role.Manager, Role.Worker)
   getRequestsByStatus(@Query('status') status: string) {
-    console.log('status', status);
+    console.log('working');
     try {
       return this.usersRequestService.getRequestsByStatus(status);
     } catch (error) {
