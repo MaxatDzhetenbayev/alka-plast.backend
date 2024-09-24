@@ -25,7 +25,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('windows')
 export class WindowsController {
-  constructor(private readonly windowsService: WindowsService) {}
+  constructor(private readonly windowsService: WindowsService) { }
 
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
@@ -62,7 +62,9 @@ export class WindowsController {
   async findWindowItems(@Param('id', ParseIntPipe) windowId: number) {
     return this.windowsService.findWindowItems(windowId);
   }
-  @Get(':id/featres')
+
+  @UseGuards(RolesGuard)
+  @Get(':id/features')
   async findWindowItemsFeatures(@Param('id', ParseIntPipe) itemId: number) {
     return this.windowsService.findWindowItemFeatures(itemId);
   }

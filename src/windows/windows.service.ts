@@ -19,7 +19,7 @@ export class WindowsService {
     private windowItemRepository: typeof WindowItem,
     @InjectModel(WindowItemFeature)
     private windowItemFeatureRepository: typeof WindowItemFeature,
-  ) {}
+  ) { }
 
   async create(createWindowDto: CreateWindowDto) {
     try {
