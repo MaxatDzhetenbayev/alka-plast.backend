@@ -11,6 +11,7 @@ import { RequestDetail } from './request-detail.entity';
 import { RequestHistory } from './request-history.entity';
 import { User } from 'src/users/user.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
+import { UserReview } from 'src/user-reviews/entities/user-review.entity';
 
 @Table({ timestamps: true, tableName: 'user_requests' })
 export class UserRequest extends Model<UserRequest> {
@@ -48,4 +49,7 @@ export class UserRequest extends Model<UserRequest> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @HasOne(() => UserReview)
+  review: UserReview;
 }

@@ -23,6 +23,10 @@ import { ConfigModule } from '@nestjs/config';
 import { Payment } from './payment/entities/payment.entity';
 import { CommentsModule } from './comments/comments.module';
 import { Comment } from './comments/entities/comment.entity';
+import { ProfileModule } from './profile/profile.module';
+import { UserReviewsModule } from './user-reviews/user-reviews.module';
+import { Profile } from './profile/entities/profile.entity';
+import { UserReview } from './user-reviews/entities/user-review.entity';
 
 @Module({
   imports: [
@@ -57,7 +61,9 @@ import { Comment } from './comments/entities/comment.entity';
         WindowItem,
         WindowItemFeature,
         Payment,
-		  Comment
+        Comment,
+        Profile,
+        UserReview,
       ],
     }),
     UsersModule,
@@ -66,6 +72,8 @@ import { Comment } from './comments/entities/comment.entity';
     FilesModule,
     PaymentModule,
     CommentsModule,
+    ProfileModule,
+    UserReviewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

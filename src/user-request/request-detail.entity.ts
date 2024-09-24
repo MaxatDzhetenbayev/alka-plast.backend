@@ -3,18 +3,17 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasOne,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { UserRequest } from './user-request.entity';
 import { WindowItem } from 'src/windows/entities/window-item.entity';
 
-
 interface Options {
   height?: number;
   width?: number;
 }
-
 
 @Table({ timestamps: true, tableName: 'request_details' })
 export class RequestDetail extends Model<RequestDetail> {

@@ -122,6 +122,7 @@ export class UserRequestService {
             'status',
             'measurement_date',
             'options',
+            'worker_id',
           ],
           include: [
             {

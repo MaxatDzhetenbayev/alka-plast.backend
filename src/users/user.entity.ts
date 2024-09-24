@@ -1,5 +1,14 @@
 import { UserRequest } from 'src/user-request/user-request.entity';
-import { Column, DataType, HasMany, Table, Model } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  HasMany,
+  Table,
+  Model,
+  HasOne,
+} from 'sequelize-typescript';
+import { UserReview } from 'src/user-reviews/entities/user-review.entity';
+import { Profile } from 'src/profile/entities/profile.entity';
 
 @Table({
   timestamps: true,
@@ -24,6 +33,9 @@ export class User extends Model<User> {
   @Column
   email: string;
 
+  @HasOne(() => Profile, { as: 'profile', foreignKey: 'user_id' })
+  profile: Profile;
+
   @Column({
     type: DataType.ARRAY(DataType.STRING),
   })
@@ -31,4 +43,7 @@ export class User extends Model<User> {
 
   @HasMany(() => UserRequest)
   requests: UserRequest[];
+
+  @HasMany(() => UserReview, { as: 'user_reviews', foreignKey: 'worker_id' })
+  reviews: UserReview[];
 }
