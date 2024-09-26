@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { UserRequest } from './user-request.entity';
 import { CreateUserRequestDto } from './dto/create-user-request.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -6,6 +6,7 @@ import { RequestDetail } from './request-detail.entity';
 import { Sequelize } from 'sequelize-typescript';
 import { WindowsService } from 'src/windows/windows.service';
 import { WindowItem } from 'src/windows/entities/window-item.entity';
+import { Role } from 'src/auth/role.enum';
 
 @Injectable()
 export class UserRequestService {
@@ -16,10 +17,12 @@ export class UserRequestService {
     private detailRepository: typeof RequestDetail,
     private sequelize: Sequelize,
     private windowsService: WindowsService,
-  ) {}
+  ) { }
+  logger = new Logger(UserRequestService.name);
 
   async createRequest(dto: CreateUserRequestDto, userid: number) {
-    const { detail, ...main } = dto;
+    const { detail, worker, ...main } = dto;
+    console.log(worker)
 
     const transaction = await this.sequelize.transaction();
     try {
@@ -31,7 +34,9 @@ export class UserRequestService {
       const createdDetail = await this.detailRepository.create(
         {
           ...detail,
+          status: "pending",
           request_id: createdRequest.id,
+          worker_id: worker.id,
         },
         { transaction },
       );
@@ -72,6 +77,7 @@ export class UserRequestService {
 
       return { ...request.dataValues, detail: requestDetail.dataValues };
     } catch (error) {
+      this.logger.error(error.message);
       await transaction.rollback();
       throw new Error(error);
     }
@@ -97,6 +103,34 @@ export class UserRequestService {
             'measurement_date',
             'options',
           ],
+          include: [
+            {
+              model: WindowItem,
+              attributes: ['id', 'name'],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  async getRequests(user: any) {
+
+    const workerOptions = user.roles.includes(Role.Worker) ? { where: { worker_id: user.id } } : {};
+
+    return this.requestRepository.findAll({
+      include: [
+        {
+          model: RequestDetail,
+          as: 'detail',
+          attributes: [
+            'id',
+            'instalation_date',
+            'status',
+            'measurement_date',
+            'options',
+          ],
+          ...workerOptions,
           include: [
             {
               model: WindowItem,
@@ -150,5 +184,59 @@ export class UserRequestService {
         },
       ],
     });
+  }
+
+
+  async getStatistics() {
+
+    try {
+      // Статистика по статусам запросов
+      const statusCounts = await this.requestRepository.findAll({
+        attributes: [
+          [this.sequelize.col('detail.status'), 'status'], // Явно указываем статус
+          [this.sequelize.fn('COUNT', this.sequelize.col('UserRequest.id')), 'count'], // Количество запросов
+        ],
+        group: ['detail.status', 'UserRequest.id'], // Добавляем UserRequest.id в GROUP BY
+        include: [{ model: RequestDetail, as: 'detail', attributes: [] }], // Включаем RequestDetail для доступа к статусу
+      });
+      // Статистика по продажам на каждый день
+      const dailySales = await this.requestRepository.findAll({
+        attributes: [
+          [this.sequelize.fn('DATE', this.sequelize.col('createdAt')), 'date'],
+          [this.sequelize.fn('COUNT', this.sequelize.col('id')), 'count'],
+        ],
+        group: [this.sequelize.fn('DATE', this.sequelize.col('createdAt'))],
+      });
+
+      // Статистика по ролям работников
+      // const workerRoles = await this.userModel.findAll({
+      //   attributes: [
+      //     [this.sequelize.fn('UNNEST', this.sequelize.col('roles')), 'role'],
+      //     [this.sequelize.fn('COUNT', this.sequelize.col('id')), 'count'],
+      //   ],
+      //   group: ['role'],
+      // });
+
+      // const avgProcessingTime = await this.requestRepository.findAll({
+      //   attributes: [
+      //     [this.sequelize.fn('AVG', this.sequelize.literal('EXTRACT(EPOCH FROM "detail"."instalation_date" - "detail"."createdAt") / 3600')), 'avg_processing_time_hours']
+      //   ],
+      //   include: [{ model: RequestDetail, attributes: [] }],
+      // });
+
+      // Общее количество запросов
+      const totalRequests = await this.requestRepository.count();
+
+      return {
+        statusCounts,
+        dailySales,
+        // workerRoles,
+        // avgProcessingTime,
+        totalRequests,
+      };
+    } catch (error) {
+      this.logger.log(error.message);
+      throw new Error(error);
+    }
   }
 }

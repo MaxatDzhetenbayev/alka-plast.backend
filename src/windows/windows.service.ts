@@ -3,6 +3,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import {
   CreateWindowDto,
@@ -25,6 +26,8 @@ export class WindowsService {
     @InjectModel(WindowItemFeature)
     private windowItemFeatureRepository: typeof WindowItemFeature,
   ) {}
+
+  logger = new Logger('WindowsService');
 
   async create(createWindowDto: CreateWindowDto) {
     try {
@@ -180,6 +183,7 @@ export class WindowsService {
       return { success: true };
     } catch (error) {
       // Откатываем изменения в случае ошибки
+      this.logger.error(error.message);
       await transaction.rollback();
       throw error;
     }

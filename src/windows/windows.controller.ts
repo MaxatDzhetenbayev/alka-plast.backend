@@ -69,8 +69,8 @@ export class WindowsController {
     return this.windowsService.findWindowItemFeatures(itemId);
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(Role.Admin)
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.Admin)
   @Put(':id/items')
   async updateWindowItem(
     @Param('id') id: number,

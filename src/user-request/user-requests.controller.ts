@@ -4,7 +4,6 @@ import {
   Post,
   Req,
   UseGuards,
-  Request,
   HttpException,
   HttpStatus,
   HttpCode,
@@ -13,6 +12,7 @@ import {
   ParseIntPipe,
   Get,
   Query,
+  Request,
 } from '@nestjs/common';
 import { UserRequest } from './user-request.entity';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -23,7 +23,7 @@ import { CreateUserRequestDto } from './dto/create-user-request.dto';
 
 @Controller('user-requests')
 export class RequestController {
-  constructor(private usersRequestService: UserRequestService) {}
+  constructor(private usersRequestService: UserRequestService) { }
 
   @UseGuards(RolesGuard)
   @Roles(Role.User, Role.Manager, Role.Admin)
@@ -51,13 +51,24 @@ export class RequestController {
     }
   }
 
-  @Get()
+  @Get('find/:status')
   @UseGuards(RolesGuard)
   @Roles(Role.Admin, Role.Manager, Role.Worker)
-  getRequestsByStatus(@Query('status') status: string) {
+  getRequestsByStatus(@Param('status') status: string) {
     console.log('working');
     try {
       return this.usersRequestService.getRequestsByStatus(status);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get()
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin, Role.Manager, Role.Worker)
+  getRequests(@Request() req) {
+    try {
+      return this.usersRequestService.getRequests(req.user);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
@@ -81,6 +92,17 @@ export class RequestController {
   getRequestById(@Param('id', ParseIntPipe) id: number) {
     try {
       return this.usersRequestService.getRequestById(id);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get('get/statistics')
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin)
+  getStatistics() {
+    try {
+      return this.usersRequestService.getStatistics();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

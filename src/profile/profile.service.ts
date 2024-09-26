@@ -10,7 +10,7 @@ export class ProfileService {
   constructor(
     @InjectModel(Profile)
     private profileRepository: typeof Profile,
-  ) {}
+  ) { }
 
   create(createProfileDto: CreateProfileDto) {
     return 'This action adds a new profile';
@@ -44,8 +44,21 @@ export class ProfileService {
     return `This action returns a #${id} profile`;
   }
 
-  update(id: number, updateProfileDto: UpdateProfileDto) {
-    return `This action updates a #${id} profile`;
+  async update(id: number, updateProfileDto: UpdateProfileDto) {
+    try {
+      console.log(id)
+      const profile = await this.profileRepository.findByPk(id);
+
+      if (!profile) {
+        throw new Error('Profile not found');
+      }
+
+      await profile.update(updateProfileDto);
+      return profile;
+    } catch (error) {
+      this.logger.error(error.message);
+      throw error;
+    }
   }
 
   remove(id: number) {

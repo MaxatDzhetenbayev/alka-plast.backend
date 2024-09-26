@@ -18,7 +18,7 @@ import { Role } from 'src/auth/role.enum';
 
 @Controller('profile')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(private readonly profileService: ProfileService) { }
 
   @Post()
   create(@Body() createProfileDto: CreateProfileDto) {

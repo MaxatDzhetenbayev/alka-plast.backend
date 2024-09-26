@@ -7,4 +7,5 @@ export class CreateUserRequestDto {
     item_id: number;
     measurement_date: Date;
   };
+  worker: any
 }

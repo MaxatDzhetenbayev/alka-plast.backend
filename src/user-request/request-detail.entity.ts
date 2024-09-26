@@ -39,6 +39,9 @@ export class RequestDetail extends Model<RequestDetail> {
   })
   options: Options;
 
+  @Column
+  worker_id: number
+
   @Column({
     defaultValue: 'pending',
   })
@@ -53,4 +56,5 @@ export class RequestDetail extends Model<RequestDetail> {
 
   @BelongsTo(() => WindowItem)
   item: WindowItem;
+
 }
