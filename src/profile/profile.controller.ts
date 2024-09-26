@@ -1,7 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/auth/role.enum';
 
 @Controller('profile')
 export class ProfileController {
@@ -20,6 +33,13 @@ export class ProfileController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.profileService.findOne(+id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin, Role.User, Role.Worker, Role.Manager)
+  @Get('find/by-user')
+  findByUser(@Param('id') id: string, @Request() req) {
+    return this.profileService.findByUser(req.user.id);
   }
 
   @Patch(':id')

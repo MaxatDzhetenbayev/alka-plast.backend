@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import {
   CreateWindowDto,
   CreateWindowItemDto,
@@ -19,7 +24,7 @@ export class WindowsService {
     private windowItemRepository: typeof WindowItem,
     @InjectModel(WindowItemFeature)
     private windowItemFeatureRepository: typeof WindowItemFeature,
-  ) { }
+  ) {}
 
   async create(createWindowDto: CreateWindowDto) {
     try {
@@ -123,6 +128,61 @@ export class WindowsService {
     }
 
     return window.items;
+  }
+
+  async updateWindowItemAndFeatures(
+    windowItemId: number,
+    updateData: Partial<WindowItem>,
+    featuresData: Partial<WindowItemFeature>[],
+  ) {
+    // Создаем транзакцию
+    const transaction = await this.windowRepository.sequelize.transaction();
+
+    try {
+      // Обновляем WindowItem
+      const windowItem = await this.windowItemRepository.findByPk(
+        windowItemId,
+        { transaction },
+      );
+      if (!windowItem) {
+        throw new Error('WindowItem not found');
+      }
+
+      await windowItem.update(updateData, { transaction });
+
+      // Обновляем WindowItemFeature
+      for (const featureData of featuresData) {
+        if (!featureData.id) {
+          await this.windowItemFeatureRepository.create(
+            {
+              item_id: windowItemId,
+              ...featureData,
+            },
+            { transaction },
+          );
+
+          continue;
+        }
+        const feature = await this.windowItemFeatureRepository.findByPk(
+          featureData.id,
+          { transaction },
+        );
+        if (!feature) {
+          throw new Error(
+            `WindowItemFeature with id ${featureData.id} not found`,
+          );
+        }
+        await feature.update(featureData, { transaction });
+      }
+
+      // Подтверждаем транзакцию, если все прошло успешно
+      await transaction.commit();
+      return { success: true };
+    } catch (error) {
+      // Откатываем изменения в случае ошибки
+      await transaction.rollback();
+      throw error;
+    }
   }
 
   async update(id: number, updateWindowDto: UpdateWindowDto) {

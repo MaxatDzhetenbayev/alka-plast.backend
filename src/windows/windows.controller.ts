@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   UploadedFile,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { WindowsService } from './windows.service';
 import {
@@ -25,7 +26,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('windows')
 export class WindowsController {
-  constructor(private readonly windowsService: WindowsService) { }
+  constructor(private readonly windowsService: WindowsService) {}
 
   @UseGuards(RolesGuard)
   @Roles(Role.Admin)
@@ -63,10 +64,21 @@ export class WindowsController {
     return this.windowsService.findWindowItems(windowId);
   }
 
-  @UseGuards(RolesGuard)
   @Get(':id/features')
   async findWindowItemsFeatures(@Param('id', ParseIntPipe) itemId: number) {
     return this.windowsService.findWindowItemFeatures(itemId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin)
+  @Put(':id/items')
+  async updateWindowItem(
+    @Param('id') id: number,
+    @Body() updateData: any, // Данные для обновления WindowItem и связанных features
+  ) {
+    console.log(updateData);
+    const { features, ...data } = updateData;
+    return this.windowsService.updateWindowItemAndFeatures(id, data, features);
   }
 
   @Get()

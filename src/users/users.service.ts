@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from './user.entity';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUserDto } from './dto/create-user.dto';
 import { SaveUserDto } from './dto/save-user.dto';
 import { UserReview } from 'src/user-reviews/entities/user-review.entity';
 import { Profile } from 'src/profile/entities/profile.entity';
@@ -18,6 +17,13 @@ export class UsersService {
   async findOne(username: string): Promise<User | undefined> {
     return this.userRepository.findOne({
       where: { username },
+      include: [
+        {
+          model: Profile,
+          as: 'profile',
+          attributes: ['name', 'surname', 'image'],
+        },
+      ],
     });
   }
 
@@ -31,6 +37,15 @@ export class UsersService {
     const response = await this.userRepository.create({
       ...user,
     });
+
+    const profile = await this.userRepository.findOne({
+      where: { username: user.username },
+    });
+    await profile.$create('profile', {
+      name: '',
+      surname: '',
+      image: '',
+    });
     return response;
   }
 
@@ -38,7 +53,6 @@ export class UsersService {
     try {
       const workers = await this.userRepository.findAll({
         where: {
-			
           roles: {
             [sequelize.Op.contains]: ['worker'],
           },
