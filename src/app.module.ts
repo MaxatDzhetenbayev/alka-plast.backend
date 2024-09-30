@@ -27,6 +27,7 @@ import { ProfileModule } from './profile/profile.module';
 import { UserReviewsModule } from './user-reviews/user-reviews.module';
 import { Profile } from './profile/entities/profile.entity';
 import { UserReview } from './user-reviews/entities/user-review.entity';
+import { MlModule } from './ml/ml.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { UserReview } from './user-reviews/entities/user-review.entity';
     CommentsModule,
     ProfileModule,
     UserReviewsModule,
+    MlModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -88,6 +90,10 @@ export class AppModule {
         { path: 'windows', method: RequestMethod.GET },
         { path: 'windows/(.*)', method: RequestMethod.GET },
         { path: 'payment/(.*)', method: RequestMethod.ALL },
+        {
+          path: 'user-requests/workers/(.*)',
+          method: RequestMethod.GET,
+        },
       )
       .forRoutes('*');
   }

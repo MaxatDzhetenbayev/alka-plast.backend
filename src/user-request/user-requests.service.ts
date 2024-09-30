@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { UserRequest } from './user-request.entity';
 import { CreateUserRequestDto } from './dto/create-user-request.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -7,6 +11,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { WindowsService } from 'src/windows/windows.service';
 import { WindowItem } from 'src/windows/entities/window-item.entity';
 import { Role } from 'src/auth/role.enum';
+import sequelize from 'sequelize';
 
 @Injectable()
 export class UserRequestService {
@@ -17,12 +22,12 @@ export class UserRequestService {
     private detailRepository: typeof RequestDetail,
     private sequelize: Sequelize,
     private windowsService: WindowsService,
-  ) { }
+  ) {}
   logger = new Logger(UserRequestService.name);
 
   async createRequest(dto: CreateUserRequestDto, userid: number) {
     const { detail, worker, ...main } = dto;
-    console.log(worker)
+    console.log(worker);
 
     const transaction = await this.sequelize.transaction();
     try {
@@ -34,7 +39,7 @@ export class UserRequestService {
       const createdDetail = await this.detailRepository.create(
         {
           ...detail,
-          status: "pending",
+          status: 'pending',
           request_id: createdRequest.id,
           worker_id: worker.id,
         },
@@ -115,8 +120,9 @@ export class UserRequestService {
   }
 
   async getRequests(user: any) {
-
-    const workerOptions = user.roles.includes(Role.Worker) ? { where: { worker_id: user.id } } : {};
+    const workerOptions = user.roles.includes(Role.Worker)
+      ? { where: { worker_id: user.id } }
+      : {};
 
     return this.requestRepository.findAll({
       include: [
@@ -186,21 +192,49 @@ export class UserRequestService {
     });
   }
 
+  async getWorkerBusyTimes(worker_id: number) {
+    try {
+      const res = await this.requestRepository.findAll({
+        include: [
+          {
+            model: RequestDetail,
+            as: 'detail',
+            attributes: ['instalation_date'],
+            where: {
+              worker_id,
+              instalation_date: {
+                [sequelize.Op.ne]: null,
+              },
+            },
+            required: true,
+          },
+        ],
+      });
+
+      return res;
+    } catch (error) {}
+  }
 
   async getStatistics() {
-
     try {
       // Статистика по статусам запросов
       const statusCounts = await this.requestRepository.findAll({
         attributes: [
-          [this.sequelize.col('detail.status'), 'status'], // Явно указываем статус
-          [this.sequelize.fn('COUNT', this.sequelize.col('UserRequest.id')), 'count'], // Количество запросов
+          [this.sequelize.col('detail.status'), 'status'],
+          [
+            this.sequelize.fn('COUNT', this.sequelize.col('detail.status')),
+            'count',
+          ],
         ],
-        group: ['detail.status', 'UserRequest.id'], // Добавляем UserRequest.id в GROUP BY
-        include: [{ model: RequestDetail, as: 'detail', attributes: [] }], // Включаем RequestDetail для доступа к статусу
+        include: [{ model: RequestDetail, as: 'detail', attributes: [] }],
+        group: ['detail.status'],
       });
+
       // Статистика по продажам на каждый день
       const dailySales = await this.requestRepository.findAll({
+        where: {
+          createdAt: { [sequelize.Op.ne]: null },
+        },
         attributes: [
           [this.sequelize.fn('DATE', this.sequelize.col('createdAt')), 'date'],
           [this.sequelize.fn('COUNT', this.sequelize.col('id')), 'count'],
@@ -219,9 +253,17 @@ export class UserRequestService {
 
       // const avgProcessingTime = await this.requestRepository.findAll({
       //   attributes: [
-      //     [this.sequelize.fn('AVG', this.sequelize.literal('EXTRACT(EPOCH FROM "detail"."instalation_date" - "detail"."createdAt") / 3600')), 'avg_processing_time_hours']
+      //     [
+      //       this.sequelize.fn(
+      //         'AVG',
+      //         this.sequelize.literal(
+      //           'EXTRACT(EPOCH FROM "detail"."instalation_date" - "detail"."createdAt") / 3600',
+      //         ),
+      //       ),
+      //       'avg_processing_time_hours',
+      //     ],
       //   ],
-      //   include: [{ model: RequestDetail, attributes: [] }],
+      //   include: [{ model: RequestDetail, as: 'detail', attributes: [] }],
       // });
 
       // Общее количество запросов
@@ -231,7 +273,7 @@ export class UserRequestService {
         statusCounts,
         dailySales,
         // workerRoles,
-        // avgProcessingTime,
+        //   avgProcessingTime,
         totalRequests,
       };
     } catch (error) {
@@ -239,4 +281,35 @@ export class UserRequestService {
       throw new Error(error);
     }
   }
+
+//   async getAverageWorkTime(worker_id: number) {
+//     try {
+//       const avgProcessingTime = await this.requestRepository.findAll({
+//         attributes: [
+//           [
+//             this.sequelize.fn(
+//               'AVG',
+//               this.sequelize.literal(
+//                 'EXTRACT(EPOCH FROM "detail"."instalation_date" - "detail"."createdAt") / 3600',
+//               ),
+//             ),
+//             'avg_processing_time_hours',
+//           ],
+//         ],
+//         include: [
+//           {
+//             model: RequestDetail,
+//             as: 'detail',
+//             where: { worker_id },
+//             attributes: [],
+//           },
+//         ],
+//       });
+
+//       return avgProcessingTime;
+//     } catch (error) {
+//       this.logger.log(error.message);
+//       throw new Error(error);
+//     }
+//   }
 }

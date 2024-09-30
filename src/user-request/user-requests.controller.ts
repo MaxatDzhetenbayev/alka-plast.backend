@@ -23,7 +23,7 @@ import { CreateUserRequestDto } from './dto/create-user-request.dto';
 
 @Controller('user-requests')
 export class RequestController {
-  constructor(private usersRequestService: UserRequestService) { }
+  constructor(private usersRequestService: UserRequestService) {}
 
   @UseGuards(RolesGuard)
   @Roles(Role.User, Role.Manager, Role.Admin)
@@ -96,6 +96,14 @@ export class RequestController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+  @Get('workers/:id/busy-times')
+  getWorkerBudyTimes(@Param('id', ParseIntPipe) worker_id: number) {
+    try {
+      return this.usersRequestService.getWorkerBusyTimes(worker_id);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 
   @Get('get/statistics')
   @UseGuards(RolesGuard)
@@ -107,4 +115,11 @@ export class RequestController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+//   @Get('workers/:id/average-work-time')
+//   getAverageWorkTimeByWorker(@Param('id', ParseIntPipe) worker_id: number) {
+//     try {
+//       return this.usersRequestService.getAverageWorkTime(worker_id);
+//     } catch (error) {}
+//   }
 }
