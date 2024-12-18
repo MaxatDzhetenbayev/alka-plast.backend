@@ -7,7 +7,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: 'https://alka-plast.kz',
     credentials: true,
   });
   await app.listen(3000);
