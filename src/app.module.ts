@@ -47,10 +47,10 @@ import { MlModule } from './ml/ml.module';
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
-      host: 'localhost',
+      host: 'alka-dev-db-nbgxtr',
       port: 5432,
       username: 'postgres',
-      password: 'admin',
+      password: 'iHLr9BbZenKa5vB',
       database: 'alka',
       logging: false,
       models: [
