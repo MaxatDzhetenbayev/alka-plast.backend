@@ -1,10 +1,10 @@
 {
   "development": {
     "dialect": "postgres",
-    "host": "localhost",
+    "host": "alka-dev-db-nbgxtr",
     "port": 5432,
     "username": "postgres",
-    "password": "admin",
+    "password": "iHLr9BbZenKa5vB",
     "database": "alka"
   },
   "test": {
@@ -16,10 +16,10 @@
   },
   "production": {
     "dialect": "postgres",
-    "host": "localhost",
+    "host": "alka-dev-db-nbgxtr",
     "port": 5432,
     "username": "postgres",
-    "password": "admin",
+    "password": "iHLr9BbZenKa5vB",
     "database": "alka"
   }
 }
